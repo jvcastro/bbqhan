@@ -1,14 +1,16 @@
 import { auth } from "@/auth";
 import type { UserRole } from "@/generated/prisma/browser";
 import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
 /**
  * Ensures the JWT refers to a real User row (avoids FK errors after DB re-seed / reset).
+ * Uses redirect instead of throw so production never shows a generic RSC error (e.g. in-app browsers with no session).
  */
 export async function requireUser() {
   const session = await auth();
   if (!session?.user?.id) {
-    throw new Error("You must be signed in.");
+    redirect("/login");
   }
 
   const dbUser = await prisma.user.findUnique({
@@ -17,9 +19,7 @@ export async function requireUser() {
   });
 
   if (!dbUser) {
-    throw new Error(
-      "Your session is out of date (for example after re-seeding the database). Sign out and sign in again.",
-    );
+    redirect("/login?reason=stale-session");
   }
 
   return {

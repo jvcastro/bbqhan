@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 export function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/";
+  const staleSession = searchParams.get("reason") === "stale-session";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,6 +47,12 @@ export function LoginForm() {
         <CardDescription>
           Mowa&apos;s Kitchenette — sign in to take orders
         </CardDescription>
+        {staleSession ? (
+          <p className="text-muted-foreground border-border bg-muted/50 rounded-md border px-3 py-2 text-sm">
+            Your previous session no longer matches the server (for example after a database update).
+            Please sign in again.
+          </p>
+        ) : null}
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="space-y-4">
