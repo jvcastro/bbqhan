@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +5,148 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  CASHIER
+}
+
+enum ProductCategory {
+  GRILLED
+  INNARDS
+  SNACKS
+  DRINKS
+  OTHER
+}
+
+enum OrderType {
+  DINE_IN
+  TAKEOUT
+  PICKUP
+}
+
+enum OrderStatus {
+  PENDING
+  PREPARING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+}
+
+enum InventoryLogType {
+  OPENING
+  MANUAL_ADD
+  MANUAL_REMOVE
+  ORDER_RESERVE
+  ORDER_RELEASE
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         UserRole @default(CASHIER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  ordersCreated Order[]        @relation("OrderCreatedBy")
+  inventoryLogs InventoryLog[]
+}
+
+model Product {
+  id                String          @id @default(cuid())
+  name              String
+  category          ProductCategory @default(OTHER)
+  priceCents        Int
+  isAvailable       Boolean         @default(true)
+  isArchived        Boolean         @default(false)
+  defaultDailyStock Int             @default(0)
+  lowStockThreshold Int?
+  sortOrder         Int             @default(0)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  dailyInventories DailyInventory[]
+  orderItems       OrderItem[]
+}
+
+model DailyInventory {
+  id             String   @id @default(cuid())
+  businessDate   DateTime @db.Date
+  productId      String
+  beginningStock Int
+  currentStock   Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  product Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  logs    InventoryLog[]
+
+  @@unique([businessDate, productId])
+  @@index([businessDate])
+}
+
+model InventoryLog {
+  id               String           @id @default(cuid())
+  createdAt        DateTime         @default(now())
+  type             InventoryLogType
+  quantityDelta    Int
+  note             String?
+  dailyInventoryId String
+  userId           String?
+  orderId          String?
+
+  dailyInventory DailyInventory @relation(fields: [dailyInventoryId], references: [id], onDelete: Cascade)
+  user           User?          @relation(fields: [userId], references: [id])
+  order          Order?         @relation(fields: [orderId], references: [id])
+
+  @@index([createdAt])
+}
+
+model Order {
+  id               String        @id @default(cuid())
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  type             OrderType
+  status           OrderStatus   @default(PENDING)
+  paymentStatus    PaymentStatus @default(UNPAID)
+  paidAt           DateTime?
+
+  customerName     String?
+  customerNickname String?
+  queueNumber      Int?
+  orderLabel       String?
+
+  notes String?
+
+  createdByUserId String
+  createdBy       User   @relation("OrderCreatedBy", fields: [createdByUserId], references: [id])
+
+  items         OrderItem[]
+  inventoryLogs InventoryLog[]
+
+  @@index([createdAt])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  productId      String
+  quantity       Int
+  unitPriceCents Int
+  notes          String?
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
 }
