@@ -2,13 +2,16 @@ import { auth } from "@/auth";
 import { AppNav } from "@/components/navigation/app-nav";
 import { redirect } from "next/navigation";
 
+/** Session uses cookies — must not be statically cached (fixes Vercel / RSC prefetch). */
+export const dynamic = "force-dynamic";
+
 export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const session = await auth();
-  if (!session) {
+  if (!session?.user?.id) {
     redirect("/login");
   }
 

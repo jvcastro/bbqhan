@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
+  secret: process.env.AUTH_SECRET,
   providers: [
     Credentials({
       credentials: {
@@ -35,13 +36,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user && "role" in user && user.id) {
         token.sub = user.id;
         token.role = user.role as UserRole;
+        if (user.email) token.email = user.email;
       }
       return token;
     },
     session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
-        session.user.role = token.role as UserRole;
+      if (session.user) {
+        if (token.sub) session.user.id = token.sub;
+        if (token.role) session.user.role = token.role as UserRole;
+        if (token.email) session.user.email = token.email as string;
       }
       return session;
     },
