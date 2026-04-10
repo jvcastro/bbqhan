@@ -36,7 +36,7 @@ export function AppNav() {
 
   const linkClass = (href: string) =>
     cn(
-      "flex min-h-12 min-w-[4.5rem] flex-1 flex-col items-center justify-center gap-0.5 rounded-lg text-xs font-medium transition-colors",
+      "flex min-h-14 min-w-[3.25rem] flex-1 touch-manipulation flex-col items-center justify-center gap-1 rounded-lg px-0.5 text-xs font-medium transition-colors active:opacity-90",
       pathname === href || (href !== "/" && pathname.startsWith(href))
         ? "bg-primary text-primary-foreground"
         : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -118,7 +118,7 @@ export function AppNav() {
         </div>
       </aside>
 
-      <nav className="bg-card text-card-foreground fixed right-0 bottom-0 left-0 z-40 flex border-t border-border pb-[env(safe-area-inset-bottom)] xl:hidden">
+      <nav className="bg-card text-card-foreground fixed right-0 bottom-0 left-0 z-40 flex border-t border-border pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pt-1 xl:hidden">
         {primary.map(({ href, label, icon: Icon }) => (
           <Link key={href} href={href} className={linkClass(href)}>
             <Icon className="size-6" />
@@ -129,7 +129,7 @@ export function AppNav() {
           <DropdownMenuTrigger
             type="button"
             className={cn(
-              "flex min-h-12 min-w-[4.5rem] flex-1 flex-col items-center justify-center gap-0.5 rounded-lg text-xs font-medium text-muted-foreground outline-none",
+              "flex min-h-14 min-w-[3.25rem] flex-1 touch-manipulation flex-col items-center justify-center gap-1 rounded-lg px-0.5 text-xs font-medium text-muted-foreground outline-none active:opacity-90",
             )}
           >
             <Menu className="size-6" />

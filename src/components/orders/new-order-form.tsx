@@ -99,7 +99,7 @@ export function NewOrderForm({ products }: { products: Product[] }) {
       className={cn(
         "flex flex-col gap-6 xl:flex-row xl:items-start xl:pb-6",
         /* Space below scroll area: order strip + offset for bottom nav + safe area */
-        "max-xl:pb-[calc(10rem+env(safe-area-inset-bottom,0px))]",
+        "max-xl:pb-[calc(11rem+env(safe-area-inset-bottom,0px))]",
       )}
     >
       <div className="min-w-0 flex-1 space-y-6">
@@ -261,7 +261,7 @@ export function NewOrderForm({ products }: { products: Product[] }) {
           className={cn(
             "bg-background/95 supports-backdrop-filter:bg-background/80 z-30 border-border p-4 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] backdrop-blur xl:static xl:z-auto xl:border-0 xl:bg-transparent xl:p-0 xl:shadow-none xl:backdrop-blur-none",
             /* Above fixed bottom nav (min-h-12 row + nav safe-area padding) */
-            "max-xl:fixed max-xl:inset-x-0 max-xl:bottom-[calc(3.25rem+env(safe-area-inset-bottom,0px))] max-xl:border-t max-xl:rounded-t-xl max-xl:pb-[max(1rem,env(safe-area-inset-bottom,0px))]",
+            "max-xl:fixed max-xl:inset-x-0 max-xl:bottom-[calc(0.25rem+3.5rem+max(0.5rem,env(safe-area-inset-bottom,0px)))] max-xl:border-t max-xl:rounded-t-xl max-xl:pb-[max(1rem,env(safe-area-inset-bottom,0px))]",
           )}
         >
           <div className="mx-auto max-w-lg space-y-3 xl:mx-0">

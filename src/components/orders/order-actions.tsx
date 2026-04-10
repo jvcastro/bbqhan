@@ -39,11 +39,11 @@ export function OrderActions({
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 touch-manipulation">
       {status === OrderStatus.PENDING ? (
         <Button
           size="lg"
-          className="min-h-11 min-w-[7rem]"
+          className="min-h-12 min-w-[7rem]"
           disabled={pending}
           onClick={() =>
             run(() => updateOrderStatus(orderId, OrderStatus.PREPARING))
@@ -55,7 +55,7 @@ export function OrderActions({
       {status === OrderStatus.PREPARING ? (
         <Button
           size="lg"
-          className="min-h-11 min-w-[7rem]"
+          className="min-h-12 min-w-[7rem]"
           disabled={pending}
           onClick={() =>
             run(() => updateOrderStatus(orderId, OrderStatus.READY))
@@ -67,7 +67,7 @@ export function OrderActions({
       {status === OrderStatus.READY ? (
         <Button
           size="lg"
-          className="min-h-11 min-w-[7rem]"
+          className="min-h-12 min-w-[7rem]"
           disabled={pending}
           onClick={() =>
             run(() => updateOrderStatus(orderId, OrderStatus.COMPLETED))
@@ -80,7 +80,7 @@ export function OrderActions({
         <Button
           size="lg"
           variant="secondary"
-          className="min-h-11 min-w-[7rem]"
+          className="min-h-12 min-w-[7rem]"
           disabled={pending}
           onClick={() =>
             run(() => updatePaymentStatus(orderId, PaymentStatus.PAID))
@@ -92,7 +92,7 @@ export function OrderActions({
         <Button
           size="lg"
           variant="outline"
-          className="min-h-11 min-w-[7rem]"
+          className="min-h-12 min-w-[7rem]"
           disabled={pending}
           onClick={() =>
             run(() => updatePaymentStatus(orderId, PaymentStatus.UNPAID))
@@ -104,7 +104,7 @@ export function OrderActions({
       <Button
         size="lg"
         variant="destructive"
-        className="min-h-11 min-w-[7rem]"
+        className="min-h-12 min-w-[7rem]"
         disabled={pending}
         onClick={() =>
           run(() => updateOrderStatus(orderId, OrderStatus.CANCELLED))

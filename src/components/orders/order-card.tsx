@@ -37,7 +37,7 @@ export function OrderCard({ order }: { order: OrderWithItems }) {
     <Card>
       <CardHeader className="space-y-2 pb-2">
         <div className="flex flex-wrap items-start justify-between gap-2">
-          <CardTitle className="text-xl leading-tight font-semibold">
+          <CardTitle className="min-w-0 max-w-full break-words text-xl leading-tight font-semibold">
             {displayName(order)}
           </CardTitle>
           <div className="flex flex-wrap gap-1">
@@ -63,7 +63,7 @@ export function OrderCard({ order }: { order: OrderWithItems }) {
               key={i.id}
               className="flex justify-between gap-2 border-b border-border py-1 last:border-0"
             >
-              <span>
+              <span className="min-w-0 break-words">
                 {i.quantity}× {i.product.name}
                 {i.notes ? (
                   <span className="text-muted-foreground block text-xs">

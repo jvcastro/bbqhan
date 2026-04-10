@@ -121,10 +121,17 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
     @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: clip;
+  }
+  /* Toasts clear the status bar / notch */
+  [data-sonner-toaster] {
+    top: max(0.75rem, env(safe-area-inset-top, 0px)) !important;
   }
 }

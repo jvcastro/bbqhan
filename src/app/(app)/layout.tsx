@@ -16,10 +16,10 @@ export default async function AppLayout({
   }
 
   return (
-    <div className="flex min-h-full">
+    <div className="flex min-h-dvh min-h-full w-full max-w-[100vw]">
       <AppNav />
-      <main className="flex min-h-full flex-1 flex-col pb-24 xl:pb-6 xl:pl-52">
-        <div className="mx-auto w-full max-w-5xl flex-1 p-4 xl:p-6">{children}</div>
+      <main className="flex min-h-dvh min-h-full min-w-0 flex-1 flex-col pb-[calc(3.75rem+max(0.5rem,env(safe-area-inset-bottom,0px)))] xl:pb-6 xl:pl-52">
+        <div className="mx-auto w-full min-w-0 max-w-5xl flex-1 p-4 xl:p-6">{children}</div>
       </main>
     </div>
   );
