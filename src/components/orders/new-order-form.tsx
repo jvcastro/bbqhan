@@ -4,7 +4,13 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/generated/prisma/browser";
 import { OrderType, type ProductCategory } from "@/generated/prisma/browser";
+import {
+  addCalendarDaysToBusinessDate,
+  formatManilaYmd,
+  getManilaBusinessDate,
+} from "@/lib/date";
 import { categoryLabels, orderTypeLabels } from "@/lib/labels";
+import { MAX_ORDER_ADVANCE_DAYS } from "@/lib/validations/order";
 import { formatPhp } from "@/lib/money";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +39,7 @@ export function NewOrderForm({ products }: { products: Product[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [orderType, setOrderType] = useState<OrderType>(OrderType.DINE_IN);
+  const [stockDay, setStockDay] = useState(() => formatManilaYmd());
   const [customerName, setCustomerName] = useState("");
   const [customerNickname, setCustomerNickname] = useState("");
   const [queueNumber, setQueueNumber] = useState("");
@@ -43,6 +50,17 @@ export function NewOrderForm({ products }: { products: Product[] }) {
   >({});
 
   const grouped = useMemo(() => groupByCategory(products), [products]);
+
+  const maxStockYmd = useMemo(
+    () =>
+      formatManilaYmd(
+        addCalendarDaysToBusinessDate(
+          getManilaBusinessDate(),
+          MAX_ORDER_ADVANCE_DAYS,
+        ),
+      ),
+    [],
+  );
 
   function bump(productId: string, delta: number) {
     setLines((prev) => {
@@ -78,6 +96,7 @@ export function NewOrderForm({ products }: { products: Product[] }) {
           }));
         await createOrder({
           type: orderType,
+          stockDay,
           customerName: customerName.trim() || null,
           customerNickname: customerNickname.trim() || null,
           queueNumber:
@@ -106,9 +125,29 @@ export function NewOrderForm({ products }: { products: Product[] }) {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">New order</h1>
           <p className="text-muted-foreground text-sm">
-            Tap items to add; set who this order is for.
+            Tap items to add. Customer fields are optional — counter tickets can
+            stay blank and show as walk-in with time and a short id.
           </p>
         </div>
+
+        <section className="space-y-2">
+          <Label htmlFor="stock-day" className="text-base">
+            Stock day (Manila)
+          </Label>
+          <p className="text-muted-foreground text-xs">
+            Reserves from that day&apos;s inventory. Pick a future date for advance
+            orders (up to {MAX_ORDER_ADVANCE_DAYS} days).
+          </p>
+          <Input
+            id="stock-day"
+            type="date"
+            className="h-12 max-w-xs text-base"
+            min={formatManilaYmd()}
+            max={maxStockYmd}
+            value={stockDay}
+            onChange={(e) => setStockDay(e.target.value)}
+          />
+        </section>
 
         <section className="space-y-3">
           <Label className="text-base">Order type</Label>
@@ -127,7 +166,12 @@ export function NewOrderForm({ products }: { products: Product[] }) {
           </div>
         </section>
 
-        <section className="grid gap-3 sm:grid-cols-2">
+        <section className="space-y-2">
+          <h2 className="text-sm font-medium">Who it&apos;s for (optional)</h2>
+          <p className="text-muted-foreground text-xs">
+            Fill any of these if it helps the pass or kitchen; otherwise skip.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="q">Queue #</Label>
             <Input
@@ -168,6 +212,7 @@ export function NewOrderForm({ products }: { products: Product[] }) {
               value={orderLabel}
               onChange={(e) => setOrderLabel(e.target.value)}
             />
+          </div>
           </div>
         </section>
 

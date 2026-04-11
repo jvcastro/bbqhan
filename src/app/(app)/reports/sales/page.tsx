@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { orderCustomerTitle } from "@/lib/order-display";
 import { formatPhp } from "@/lib/money";
 import {
   orderStatusLabels,
@@ -101,10 +102,7 @@ export default async function SalesReportPage() {
                 className="bg-muted/40 space-y-2 rounded-lg border border-border p-3 text-sm"
               >
                 <div className="flex flex-wrap justify-between gap-2">
-                  <span className="font-medium">
-                    {o.queueNumber != null ? `#${o.queueNumber} · ` : null}
-                    {o.customerNickname ?? o.customerName ?? o.orderLabel ?? "—"}
-                  </span>
+                  <span className="font-medium">{orderCustomerTitle(o)}</span>
                   <span className="tabular-nums">{formatPhp(sub)}</span>
                 </div>
                 <div className="text-muted-foreground flex flex-wrap gap-2 text-xs">

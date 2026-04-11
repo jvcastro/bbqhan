@@ -119,6 +119,9 @@ model Order {
   paymentStatus    PaymentStatus @default(UNPAID)
   paidAt           DateTime?
 
+  /** Manila calendar day used for daily inventory reserve/release. */
+  stockBusinessDate DateTime     @db.Date
+
   customerName     String?
   customerNickname String?
   queueNumber      Int?

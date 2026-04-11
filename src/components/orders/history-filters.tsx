@@ -31,7 +31,7 @@ export function HistoryFilters() {
         <Input
           id="search-h"
           className="h-11 text-base"
-          placeholder="Name, nickname, queue #"
+          placeholder="Name, queue #, label, or order id"
           defaultValue={q}
           onKeyDown={(e) => {
             if (e.key === "Enter") {

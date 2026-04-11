@@ -1,11 +1,19 @@
+import Link from "next/link";
 import type { Order, OrderItem, Product } from "@/generated/prisma/browser";
 import {
   orderStatusLabels,
   orderTypeLabels,
   paymentLabels,
 } from "@/lib/labels";
+import {
+  orderCustomerTitle,
+  orderIsAdvanceStock,
+  orderStockDayLabel,
+} from "@/lib/order-display";
 import { formatPhp } from "@/lib/money";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,14 +26,7 @@ export type OrderWithItems = Order & {
   items: (OrderItem & { product: Product })[];
 };
 
-function displayName(o: OrderWithItems) {
-  const parts: string[] = [];
-  if (o.queueNumber != null) parts.push(`#${o.queueNumber}`);
-  if (o.customerNickname) parts.push(o.customerNickname);
-  if (o.customerName) parts.push(o.customerName);
-  if (o.orderLabel) parts.push(o.orderLabel);
-  return parts.length ? parts.join(" · ") : "No name";
-}
+const editableStatuses = new Set(["PENDING", "PREPARING", "READY"]);
 
 export function OrderCard({ order }: { order: OrderWithItems }) {
   const total = order.items.reduce(
@@ -38,9 +39,14 @@ export function OrderCard({ order }: { order: OrderWithItems }) {
       <CardHeader className="space-y-2 pb-2">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <CardTitle className="min-w-0 max-w-full break-words text-xl leading-tight font-semibold">
-            {displayName(order)}
+            {orderCustomerTitle(order)}
           </CardTitle>
           <div className="flex flex-wrap gap-1">
+            {orderIsAdvanceStock(order) ? (
+              <Badge variant="outline" className="border-amber-500/60 text-amber-950 dark:text-amber-100">
+                Stock day {orderStockDayLabel(order)}
+              </Badge>
+            ) : null}
             <Badge variant="outline">{orderTypeLabels[order.type]}</Badge>
             <Badge
               variant={
@@ -79,6 +85,17 @@ export function OrderCard({ order }: { order: OrderWithItems }) {
         </ul>
         {order.notes ? (
           <p className="text-muted-foreground text-sm">Note: {order.notes}</p>
+        ) : null}
+        {editableStatuses.has(order.status) ? (
+          <Link
+            href={`/orders/${order.id}/edit`}
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "inline-flex w-full min-h-12 touch-manipulation items-center justify-center text-base",
+            )}
+          >
+            Edit items
+          </Link>
         ) : null}
         <OrderActions
           orderId={order.id}
